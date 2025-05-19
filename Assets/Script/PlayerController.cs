@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        
         Cursor.lockState = CursorLockMode.Locked;
         _rigidbody = GetComponent<Rigidbody>();
     }
@@ -81,10 +82,8 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        Debug.Log(IsGround());
         if (context.phase == InputActionPhase.Started && IsGround())
         {
-            Debug.Log("gd");
             _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         }
     }
