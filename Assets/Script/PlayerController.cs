@@ -9,7 +9,9 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpPower;
     private Vector2 _curMoveMentInput;
+    public LayerMask groundLayerMask;
     
     [Header("Look")]
     public Transform cameraContainer;
@@ -18,6 +20,11 @@ public class PlayerController : MonoBehaviour
     private float _camCurXRot;
     public float lookSensitivity;
     private Vector2 _mouseDelta;
+    
+    [Header("Ground Check")]
+    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] private float groundCheckOffset = 0.9f; // 플레이어 중심에서 아래로 얼마나 떨어진 위치에 체크할지
+    [SerializeField] private bool showGroundGizmo = true; // 기즈모 표시 여부
     
     private Rigidbody _rigidbody;
 
@@ -71,4 +78,30 @@ public class PlayerController : MonoBehaviour
     {
         _mouseDelta = context.ReadValue<Vector2>();
     }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        Debug.Log(IsGround());
+        if (context.phase == InputActionPhase.Started && IsGround())
+        {
+            Debug.Log("gd");
+            _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+        }
+    }
+
+    bool IsGround()
+    {
+        Vector3 spherePos = transform.position + Vector3.down * 0.9f;
+        return Physics.CheckSphere(spherePos, 0.2f, groundLayerMask);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!showGroundGizmo) return;
+
+        Gizmos.color = Color.red;
+        Vector3 checkPos = transform.position + Vector3.down * groundCheckOffset;
+        Gizmos.DrawWireSphere(checkPos, groundCheckRadius);
+    }
+
 }
