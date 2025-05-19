@@ -18,26 +18,22 @@ public class Interaction : MonoBehaviour
     public TextMeshProUGUI promptText;
     private Camera _camera;
 
+    public bool showGizmoz = true;
+
     private void Start()
     {
         _camera = Camera.main;
         
-        if (_camera == null)
-            Debug.LogError("Main Camera not found! _camera is null.");
 
         GameObject promptObj = GameObject.Find("PromptText");
         if (promptObj != null)
         {
             promptText = promptObj.GetComponent<TextMeshProUGUI>();
         }
-        else
-        {
-            Debug.LogWarning("PromptText object not found in scene!");
-        }
     }
     private void OnDrawGizmos()
     {
-        if (_camera == null) return;
+        if (!showGizmoz ||_camera == null) return;
 
         Vector3 origin;
         Vector3 direction;

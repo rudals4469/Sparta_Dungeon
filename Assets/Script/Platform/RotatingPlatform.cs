@@ -4,7 +4,7 @@ public class RotatingPlatform : MonoBehaviour
 {
     public Transform centerPoint;    // 회전 중심점
     public float radius = 2f;        // 회전 반지름
-    public float rotationSpeed = 1f; // 초당 회전 속도 (도 단위가 아님, 라디안처럼 동작)
+    public float rotationSpeed = 1f; // 초당 회전 속도 (라디언)
 
     private float _angle = 0f;
 

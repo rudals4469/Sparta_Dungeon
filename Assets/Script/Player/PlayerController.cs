@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpPower;
-    private Vector2 _curMoveMentInput;
+    private Vector2 _curMovementInput;
     public LayerMask groundLayerMask;
     
     [Header("Look")]
@@ -34,30 +34,38 @@ public class PlayerController : MonoBehaviour
     public Action Inventory;
     public Condition staminaBar;  
     public float jumpStaminaCost = 10f;
+    
+    private WallClimbing wallClimbing;
 
     private void Start()
     {
         
         Cursor.lockState = CursorLockMode.Locked;
         _rigidbody = GetComponent<Rigidbody>();
+        wallClimbing = GetComponent<WallClimbing>();
     }
 
     private void FixedUpdate()
     {
+        if (wallClimbing != null && wallClimbing.IsClimbing())
+        {
+            return;
+        }
+
         Move();
     }
 
     private void LateUpdate()
     {
-        if (canLook)
+        if (canLook && (wallClimbing == null || !wallClimbing.IsClimbing()))
         {
-            CameraLook();    
+            CameraLook();
         }
     }
 
     void Move()
     {
-        Vector3 dir = transform.forward * _curMoveMentInput.y + transform.right * _curMoveMentInput.x;
+        Vector3 dir = transform.forward * _curMovementInput.y + transform.right * _curMovementInput.x;
         dir *= moveSpeed;
         dir.y = _rigidbody.velocity.y;
         
@@ -77,11 +85,11 @@ public class PlayerController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Performed)
         {
-            _curMoveMentInput = context.ReadValue<Vector2>();
+            _curMovementInput = context.ReadValue<Vector2>();
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _curMoveMentInput = Vector2.zero;
+            _curMovementInput = Vector2.zero;
         }
     }
 
@@ -92,9 +100,14 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started && IsGround())
+        if (context.phase == InputActionPhase.Started)
         {
-            if (staminaBar.curValue >= jumpStaminaCost)
+            if (wallClimbing != null && wallClimbing.IsClimbing())
+            {
+                return;
+            }
+
+            if (IsGround() && staminaBar.curValue >= jumpStaminaCost)
             {
                 staminaBar.Subtract(jumpStaminaCost);
                 _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
@@ -111,7 +124,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    bool IsGround()
+    public bool IsGround()
     {
         Vector3 spherePos = transform.position + Vector3.down * 0.9f;
         return Physics.CheckSphere(spherePos, 0.2f, groundLayerMask);
@@ -126,7 +139,7 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(checkPos, groundCheckRadius);
     }
 
-    public void BoostMoveSpeed(float multiplier, float duration) // 이동속도 부스트 함수, 인벤토리 사용 시 호출 시키기
+    public void BoostMoveSpeed(float multiplier, float duration)
     {
         BuffUIManager.Instance.ShowBuff(mushroomIcon, 10f, BuffType.SpeedBoost);
         StartCoroutine(SpeedBoostRoutine(multiplier, duration));
