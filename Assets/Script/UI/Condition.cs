@@ -22,6 +22,12 @@ public class Condition : MonoBehaviour
 
     private void Update()
     {
+        if (curValue < maxValue)
+        {
+            curValue += passiveValue * Time.deltaTime;
+            curValue = Mathf.Clamp(curValue, 0, maxValue);
+        }
+        
         uiaBar.fillAmount = GetPercentage();
         valueText.text = $"{Mathf.FloorToInt(curValue)} / {Mathf.FloorToInt(maxValue)}";
     }

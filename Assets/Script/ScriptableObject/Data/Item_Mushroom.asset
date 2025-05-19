@@ -22,5 +22,5 @@ MonoBehaviour:
   maxStackAmount: 12
   consumables:
   - type: 2
-    value: 1.5
+    value: 3
   effectDuration: 5

@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     public bool canLook = true;
 
 
-    
+    public Sprite mushroomIcon;
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckRadius = 0.2f;
@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     
     private Rigidbody _rigidbody;
     public Action Inventory;
+    public Condition staminaBar;  
+    public float jumpStaminaCost = 10f;
 
     private void Start()
     {
@@ -92,7 +94,11 @@ public class PlayerController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started && IsGround())
         {
-            _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+            if (staminaBar.curValue >= jumpStaminaCost)
+            {
+                staminaBar.Subtract(jumpStaminaCost);
+                _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+            }
         }
     }
 
@@ -122,6 +128,7 @@ public class PlayerController : MonoBehaviour
 
     public void BoostMoveSpeed(float multiplier, float duration) // 이동속도 부스트 함수, 인벤토리 사용 시 호출 시키기
     {
+        BuffUIManager.Instance.ShowBuff(mushroomIcon, 10f, BuffType.SpeedBoost);
         StartCoroutine(SpeedBoostRoutine(multiplier, duration));
     }
 
