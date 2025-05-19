@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public enum ItemType
 {
     Equipable,
@@ -14,10 +12,11 @@ public enum ItemType
 public enum ConsumableType
 {
     Health,
-    Hunger
+    Hunger,
+    Boost
 }
 
-[SerializeField]
+[System.Serializable]
 public class ItemDataConsumable
 {
     public ConsumableType type;
@@ -33,12 +32,15 @@ public class ItemData : ScriptableObject
     public ItemType type;
     public Sprite icon;
     public GameObject dropPrefab;
-    
+
     [Header("Stacking")]
     public bool canStack;
     public int maxStackAmount;
-    
+
     [Header("Consumable")]
-    public ItemDataConsumable[] Consumables;
+    public ItemDataConsumable[] consumables;
+    
+    [Header("Effect")]
+    public float effectDuration; // 0이면 즉시형, 0이상이면 버프형
 
 }

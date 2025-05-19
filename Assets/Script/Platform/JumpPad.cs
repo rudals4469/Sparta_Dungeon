@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class JumpPad : MonoBehaviour
 {
-    [SerializeField]private float jumpForce = 15f; // 튕겨나는 힘
+    [SerializeField]private float jumpForce; // 튕겨나는 힘
     public Vector3 jumpDirection = Vector3.up; // 윗쪽 방향
 
     private void OnCollisionEnter(Collision other)

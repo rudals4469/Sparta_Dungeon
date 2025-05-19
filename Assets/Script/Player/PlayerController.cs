@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     private float _camCurXRot;
     public float lookSensitivity;
     private Vector2 _mouseDelta;
+    public bool canLook = true;
+
+
+    
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckRadius = 0.2f;
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool showGroundGizmo = true; // 기즈모 표시 여부
     
     private Rigidbody _rigidbody;
+    public Action Inventory;
 
     private void Start()
     {
@@ -42,7 +47,10 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        CameraLook();
+        if (canLook)
+        {
+            CameraLook();    
+        }
     }
 
     void Move()
@@ -88,6 +96,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Started)
+        {
+            Inventory?.Invoke();
+            ToggleCursor();
+        }
+    }
+
     bool IsGround()
     {
         Vector3 spherePos = transform.position + Vector3.down * 0.9f;
@@ -101,6 +118,28 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;
         Vector3 checkPos = transform.position + Vector3.down * groundCheckOffset;
         Gizmos.DrawWireSphere(checkPos, groundCheckRadius);
+    }
+
+    public void BoostMoveSpeed(float multiplier, float duration) // 이동속도 부스트 함수, 인벤토리 사용 시 호출 시키기
+    {
+        StartCoroutine(SpeedBoostRoutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostRoutine(float multiplier, float duration)
+    {
+        float orninalSpeed = moveSpeed;
+        moveSpeed *= multiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = orninalSpeed;
+    }
+
+    void ToggleCursor()
+    {
+        bool toggle = Cursor.lockState == CursorLockMode.Locked;
+        Cursor.lockState = toggle ? CursorLockMode.None : CursorLockMode.Locked;
+        canLook = !toggle;
     }
 
 }
