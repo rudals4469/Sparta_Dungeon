@@ -212,6 +212,9 @@ public class UIInventory : MonoBehaviour
                    case ConsumableType.Boost:
                        _controller.BoostMoveSpeed(_selectedItem.consumables[i].value, _selectedItem.effectDuration);
                        break;
+                   case ConsumableType.DoubleJump:
+                       _controller.EnableDoubleJump(true, _selectedItem.effectDuration);
+                       break;
                 }
             }
             

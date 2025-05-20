@@ -13,7 +13,8 @@ public enum ConsumableType
 {
     Health,
     Hunger,
-    Boost
+    Boost,
+    DoubleJump
 }
 
 [System.Serializable]

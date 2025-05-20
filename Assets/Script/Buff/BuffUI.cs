@@ -5,8 +5,7 @@ using TMPro;
 public enum BuffType
 {
     SpeedBoost,
-    AttackBoost,
-    DefenseBoost,
+    DoubleJump
     // 필요시 추가
 }
 public class BuffUI : MonoBehaviour

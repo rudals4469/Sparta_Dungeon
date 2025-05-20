@@ -22,42 +22,58 @@ public class PlayerController : MonoBehaviour
     private Vector2 _mouseDelta;
     public bool canLook = true;
 
-
+    [Header("Button Icon")]
     public Sprite mushroomIcon;
+    public Sprite doubleJumpIcon;
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private float groundCheckOffset = 0.9f; // 플레이어 중심에서 아래로 얼마나 떨어진 위치에 체크할지
     [SerializeField] private bool showGroundGizmo = true; // 기즈모 표시 여부
     
-    private Rigidbody _rigidbody;
-    public Action Inventory;
-    public Condition staminaBar;  
+    [Header("Stats")]
     public float jumpStaminaCost = 10f;
-    
-    private WallClimbing wallClimbing;
+    public int maxJumpCount = 1; // 기본은 1단 점프
+    private int _currentJumpCount;
+
+    private Rigidbody _rigidbody;
+    private WallClimbing _wallClimbing;
+    private bool _wasGrounded;
+
+    public Condition staminaBar;
+    public Action Inventory;
 
     private void Start()
     {
         
         Cursor.lockState = CursorLockMode.Locked;
         _rigidbody = GetComponent<Rigidbody>();
-        wallClimbing = GetComponent<WallClimbing>();
+        _wallClimbing = GetComponent<WallClimbing>();
+        _currentJumpCount = maxJumpCount;
     }
-
     private void FixedUpdate()
     {
-        if (wallClimbing != null && wallClimbing.IsClimbing())
+        if (_wallClimbing != null && _wallClimbing.IsClimbing())
         {
             return;
         }
 
+        bool isGrounded = IsGround();
+
+        if (!_wasGrounded && isGrounded)
+        {
+            ResetJumpCount();
+        }
+        
+        _wasGrounded = isGrounded;
+
         Move();
+        
     }
 
     private void LateUpdate()
     {
-        if (canLook && (wallClimbing == null || !wallClimbing.IsClimbing()))
+        if (canLook && (_wallClimbing == null || !_wallClimbing.IsClimbing()))
         {
             CameraLook();
         }
@@ -102,18 +118,31 @@ public class PlayerController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started)
         {
-            if (wallClimbing != null && wallClimbing.IsClimbing())
-            {
-                return;
-            }
-
-            if (IsGround() && staminaBar.curValue >= jumpStaminaCost)
-            {
-                staminaBar.Subtract(jumpStaminaCost);
-                _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
-            }
+            TryJump();
         }
     }
+
+    private void TryJump()
+    {
+        if (_wallClimbing != null && _wallClimbing.IsClimbing())
+        {
+            return;
+        }
+
+        if (_currentJumpCount > 0 && staminaBar.curValue >= jumpStaminaCost)
+        {
+            staminaBar.Subtract(jumpStaminaCost);
+            _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0f, _rigidbody.velocity.z); // 기존 Y속도 제거
+            _rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+            _currentJumpCount--;
+        }
+    }
+    
+    private void ResetJumpCount()
+    {
+        _currentJumpCount = maxJumpCount;
+    }
+    
 
     public void OnInventory(InputAction.CallbackContext context)
     {
@@ -141,7 +170,7 @@ public class PlayerController : MonoBehaviour
 
     public void BoostMoveSpeed(float multiplier, float duration)
     {
-        BuffUIManager.Instance.ShowBuff(mushroomIcon, 10f, BuffType.SpeedBoost);
+        BuffUIManager.Instance.ShowBuff(mushroomIcon, duration, BuffType.SpeedBoost);
         StartCoroutine(SpeedBoostRoutine(multiplier, duration));
     }
 
@@ -160,6 +189,32 @@ public class PlayerController : MonoBehaviour
         bool toggle = Cursor.lockState == CursorLockMode.Locked;
         Cursor.lockState = toggle ? CursorLockMode.None : CursorLockMode.Locked;
         canLook = !toggle;
+    }
+    
+    public void EnableDoubleJump(bool CheckDbouleJump = false, float duration = 0f)
+    {
+        if (CheckDbouleJump)
+        {
+            BuffUIManager.Instance.ShowBuff(doubleJumpIcon, duration, BuffType.DoubleJump);
+            StopCoroutine(nameof(TemporaryDoubleJump));
+            StartCoroutine(TemporaryDoubleJump(duration));
+        }
+        else
+        {
+            maxJumpCount = 1;
+            _currentJumpCount = maxJumpCount;
+        }
+    }
+
+    private IEnumerator TemporaryDoubleJump(float duration)
+    {
+        maxJumpCount = 2;
+        _currentJumpCount = maxJumpCount; // 더블 점프 시작 시 리셋
+
+        yield return new WaitForSeconds(duration);
+
+        maxJumpCount = 1;
+        _currentJumpCount = maxJumpCount; // 더블 점프 끝난 후 다시 리셋
     }
 
 }
