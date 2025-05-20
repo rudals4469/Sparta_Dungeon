@@ -19,6 +19,7 @@ public class Interaction : MonoBehaviour
     private Camera _camera;
 
     public bool showGizmoz = true;
+    private SimpleOutLine _lastOutlined;
 
     private void Start()
     {
@@ -72,10 +73,8 @@ public class Interaction : MonoBehaviour
 
     private void Update()
     {
-        
         if (_camera == null)
         {
-            Debug.LogWarning("_camera is null in Update");
             return;
         }
         
@@ -86,20 +85,43 @@ public class Interaction : MonoBehaviour
             Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
             RaycastHit hit;
 
-            // 디버깅용
             Debug.DrawRay(ray.origin, ray.direction * maxCheckDistance, Color.red);
 
             if (Physics.Raycast(ray, out hit, maxCheckDistance, layerMask))
             {
-                if (hit.collider.gameObject != curInteractGameObject)
+                GameObject hitObj = hit.collider.gameObject;
+
+                if (hitObj != curInteractGameObject)
                 {
-                    curInteractGameObject = hit.collider.gameObject;
+                    // 이전 아웃라인 끄기
+                    if (_lastOutlined != null)
+                    {
+                        _lastOutlined.DisableOutline();
+                        _lastOutlined = null;
+                    }
+
+                    curInteractGameObject = hitObj;
                     _curInteractable = hit.collider.GetComponent<IInteractable>();
                     SetPromptText();
+
+                    // 새 오브젝트 아웃라인 켜기
+                    SimpleOutLine outline = hitObj.GetComponent<SimpleOutLine>();
+                    if (outline != null)
+                    {
+                        outline.EnableOutline();
+                        _lastOutlined = outline;
+                    }
                 }
             }
             else
             {
+                // 레이 맞는 게 없으면 아웃라인 끄기
+                if (_lastOutlined != null)
+                {
+                    _lastOutlined.DisableOutline();
+                    _lastOutlined = null;
+                }
+
                 curInteractGameObject = null;
                 _curInteractable = null;
                 promptText.gameObject.SetActive(false);

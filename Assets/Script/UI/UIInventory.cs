@@ -224,6 +224,12 @@ public class UIInventory : MonoBehaviour
 
     public void OnDropButton()
     {
+        if (_selectedItem != null && _selectedItem.type == ItemType.Equipable && slots[_selectedItemIndex].equipped)
+        {
+            EquipmentManager.Instance.Unequip(_selectedItem);
+            slots[_selectedItemIndex].equipped = false;
+        }
+        
         ThrowItem(_selectedItem);
         RemovedSelectedItem();
     }
@@ -242,4 +248,25 @@ public class UIInventory : MonoBehaviour
         
         UpateUI();
     }
+    
+    public void OnEquipButton()
+    {
+        if (_selectedItem != null && _selectedItem.type == ItemType.Equipable)
+        {
+            EquipmentManager.Instance.Equip(_selectedItem);
+            slots[_selectedItemIndex].equipped = true;
+            SelectedItem(_selectedItemIndex); // UI 갱신
+        }
+    }
+
+    public void OnUnEquipButton()
+    {
+        if (_selectedItem != null && _selectedItem.type == ItemType.Equipable)
+        {
+            EquipmentManager.Instance.Unequip(_selectedItem);
+            slots[_selectedItemIndex].equipped = false;
+            SelectedItem(_selectedItemIndex); // UI 갱신
+        }
+    }
+    
 }

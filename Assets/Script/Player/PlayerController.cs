@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     public Condition staminaBar;
     public Action Inventory;
 
+    public bool isLaunched = false;
+
     private void Start()
     {
         
@@ -53,6 +55,8 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if(isLaunched) return;
+        
         if (_wallClimbing != null && _wallClimbing.IsClimbing())
         {
             return;
@@ -215,6 +219,38 @@ public class PlayerController : MonoBehaviour
 
         maxJumpCount = 1;
         _currentJumpCount = maxJumpCount; // 더블 점프 끝난 후 다시 리셋
+    }
+    
+    public void ApplyEquipEffects(ItemData item)
+    {
+        foreach (var effect in item.equipEffects)
+        {
+            switch (effect.effectType)
+            {
+                case EquipEffectType.MoveSpeed:
+                    moveSpeed += effect.value;
+                    break;
+                case EquipEffectType.JumpPower:
+                    jumpPower += effect.value;
+                    break;
+            }
+        }
+    }
+
+    public void RemoveEquipEffects(ItemData item)
+    {
+        foreach (var effect in item.equipEffects)
+        {
+            switch (effect.effectType)
+            {
+                case EquipEffectType.MoveSpeed:
+                    moveSpeed -= effect.value;
+                    break;
+                case EquipEffectType.JumpPower:
+                    jumpPower -= effect.value;
+                    break;
+            }
+        }
     }
 
 }

@@ -17,6 +17,19 @@ public enum ConsumableType
     DoubleJump
 }
 
+public enum EquipEffectType
+{
+    None,
+    MoveSpeed,
+    JumpPower,
+}
+
+[System.Serializable]
+public class EquipEffect
+{
+    public EquipEffectType  effectType;
+    public float value;
+}
 [System.Serializable]
 public class ItemDataConsumable
 {
@@ -43,5 +56,8 @@ public class ItemData : ScriptableObject
     
     [Header("Effect")]
     public float effectDuration; // 0이면 즉시형, 0이상이면 버프형
+    
+    [Header("Equip effect")]
+    public EquipEffect[] equipEffects;
 
 }

@@ -12,12 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a16da063c10ba142ab6a504a7bcf29a, type: 3}
   m_Name: Item_DoubleJump
   m_EditorClassIdentifier: 
-  displayName: 
-  description: 
-  type: 0
-  icon: {fileID: 0}
-  dropPrefab: {fileID: 0}
-  canStack: 0
-  maxStackAmount: 0
-  consumables: []
-  effectDuration: 0
+  displayName: "\uB354\uBE14 \uC810\uD504 \uAC00\uB2A5"
+  description: "\uC77C\uC2DC\uC801\uC73C\uB85C \uB354\uBE14 \uC810\uD504\uB97C \uAC00\uB2A5\uD558\uAC8C
+    \uD574\uC900\uB2E4."
+  type: 1
+  icon: {fileID: 21300000, guid: d4b87fa4adc3b064189e130e9f3cd6ab, type: 3}
+  dropPrefab: {fileID: 6449311146264986346, guid: 0bbb17cf9458c9f458307c4f2897a3bd, type: 3}
+  canStack: 1
+  maxStackAmount: 12
+  consumables:
+  - type: 3
+    value: 0
+  effectDuration: 30
+  equipEffects: []

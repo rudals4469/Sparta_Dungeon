@@ -17,10 +17,11 @@ MonoBehaviour:
     \uC99D\uAC00\uD55C\uB2E4."
   type: 1
   icon: {fileID: 21300000, guid: d4b87fa4adc3b064189e130e9f3cd6ab, type: 3}
-  dropPrefab: {fileID: 0}
+  dropPrefab: {fileID: 7050870762188701327, guid: 7357bc04e9c151848a9ee70ddd8adf6e, type: 3}
   canStack: 1
   maxStackAmount: 12
   consumables:
   - type: 2
     value: 3
-  effectDuration: 5
+  effectDuration: 30
+  equipEffects: []
