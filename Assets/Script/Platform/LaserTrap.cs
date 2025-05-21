@@ -24,9 +24,14 @@ public class LaserTrap : MonoBehaviour
         {
             lineRenderer = GetComponent<LineRenderer>();
         }
-        else
+        else 
         {
             lineRenderer.positionCount = 2;
+            lineRenderer.startWidth = 0.05f;
+            lineRenderer.endWidth = 0.05f;
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.startColor = Color.red;
+            lineRenderer.endColor = Color.red;
             lineRenderer.SetPosition(0, laserOrigin.position);
             lineRenderer.SetPosition(1, laserOrigin.position + laserDirection.normalized * laserLength);
         }
@@ -90,15 +95,6 @@ public class LaserTrap : MonoBehaviour
         if (laserText != null)
         {
             laserText.text = "";
-        }
-    }
-    
-    private void OnDrawGizmos()
-    {
-        if (laserOrigin != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawRay(laserOrigin.position, laserDirection.normalized * laserLength);
         }
     }
     

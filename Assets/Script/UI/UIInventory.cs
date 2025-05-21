@@ -255,7 +255,7 @@ public class UIInventory : MonoBehaviour
         {
             EquipmentManager.Instance.Equip(_selectedItem);
             slots[_selectedItemIndex].equipped = true;
-            SelectedItem(_selectedItemIndex); // UI 갱신
+            SelectedItem(_selectedItemIndex);
         }
     }
 
@@ -265,7 +265,7 @@ public class UIInventory : MonoBehaviour
         {
             EquipmentManager.Instance.Unequip(_selectedItem);
             slots[_selectedItemIndex].equipped = false;
-            SelectedItem(_selectedItemIndex); // UI 갱신
+            SelectedItem(_selectedItemIndex);
         }
     }
     
